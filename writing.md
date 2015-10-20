@@ -4,9 +4,10 @@ title: Writing
 permalink: /writing/
 ---
 
-Communcation is about bridging the gap between two minds. Clear communication is one of the greatest things there is. Taking that jumble of implicit knowledge, internal dialog and externalizing it, that is so good. And to me, the degree to which clear communication is great is directly proportional to the width of that gap separating the two communicating parties. Science talk: amazing. Science talk to non-scientists: freaking wonderful. Science talk to kids: to children: wholy holy.
+Communcation is about bridging the gap between two minds. Clear communication is one of the greatest things there is. Taking that jumble of implicit knowledge, internal dialog and externalizing it, that is so good. And to me, the degree to which clear communication is great is directly proportional to the width of that gap separating the two communicating parties. Science talk: amazing. Science talk to non-scientists: freaking wonderful. Science talk to kids: to children: wholy holy. This wonderment motivates my writing.
 
-This wonderment, I believe, is why I write. Here are some samples of my writing that I did for the Berkeley Science Review:
+In graduate school, I spent a lot of time learning (and re-learning) quantitative methods. Some of these concepts seemed to pop up again and again across many different fields. I felt compelled to try to package and present these concepts to a general, non-math-savvy audience with the hope that they'd find some enlightenment about how the world works. The Toolbox column, as these came to be known, comprises some of my favorite writing samples. Here are some of those articles as published online in the [Berkeley Science Review](http://www.berkeleysciencereview.com) (an amazing student-operated magazine that you should definitely subscribe to):
 
-- [Information theory](http://berkeleysciencereview.com/article/information-theory/)
+- [Fourier transform](http://berkeleysciencereview.com/article/toolbox-the-fourier-transform/)
 - [Bayesian inference](http://berkeleysciencereview.com/article/toolbox/)
+- [Information theory](http://berkeleysciencereview.com/article/information-theory/)
