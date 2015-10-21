@@ -148,7 +148,11 @@ pre {
 .site-header {
   border-top: 5px solid #424242;
   border-bottom: 1px solid #e8e8e8;
-  min-height: 56px;
+  min-height: 100px;
+  background-image: url(../resources/notebook-small.png);
+  background-repeat: repeat-x;
+  background-size: 1000px;
+  background-position: 0px -90px;
   position: relative; }
 
 .site-title {
@@ -207,7 +211,11 @@ pre {
  */
 .site-footer {
   border-top: 1px solid #e8e8e8;
-  padding: 30px 0; }
+  padding: 30px 0;
+  background-image: url(../resources/notebook-small.png);
+  background-repeat: repeat-y;
+  background-size: 1000px;
+  background-position: 0px -120px; }
 
 .footer-heading {
   font-size: 18px;

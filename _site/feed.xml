@@ -5,31 +5,42 @@
     <description>Personal website of Robert Gibboni</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 20 Oct 2015 10:49:13 -0700</pubDate>
-    <lastBuildDate>Tue, 20 Oct 2015 10:49:13 -0700</lastBuildDate>
-    <generator>Jekyll v2.5.3</generator>
+    <pubDate>Tue, 20 Oct 2015 19:24:27 -0700</pubDate>
+    <lastBuildDate>Tue, 20 Oct 2015 19:24:27 -0700</lastBuildDate>
+    <generator>Jekyll v2.4.0</generator>
     
       <item>
-        <title>First post</title>
-        <description>&lt;p&gt;Excited!&lt;/p&gt;
+        <title>Cocktail Part A</title>
+        <description>&lt;p&gt;In July 2015, friend and composer Richard Warp and I set out to make an installation for the &lt;a href=&quot;http://www.mainlymozart.org/mozart-and-the-mind/mozart-the-mind-the-prodigal-years/&quot;&gt;Mozart and the Mind&lt;/a&gt; conference. Our goal was to develop software that would algorithmically transform a conversation into a unique musical composition in real-time. For computer music, I had always turned to Max/MSP, but felt that it’s building-block style made it difficult to work in more conventional program flow, data analysis, and machine learning. That’s when I discovered the fantastic python module &lt;a href=&quot;http://ajaxsoundstudio.com/software/pyo/&quot;&gt;pyo&lt;/a&gt;, a library for real-time audio synthesis. I am planning on writing a blog post detailing my exploits, but for now, you can at least check out the results.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;WonderfulClass&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lovely_attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-		&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lovely_attribute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lovely_attribute&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;say_something_nice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-		&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;why you have such a nice &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%s&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lovely_attribute&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Artist statement:&lt;/p&gt;
 
-&lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://github.com/jekyll/jekyll-help&quot;&gt;Jekyll’s dedicated Help repository&lt;/a&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Conversation is the heart of the cocktail party. Through conversation we share our ideas and stories, and we mix our voices in an ever-changing sonic scene. Spoken language facilitates this mixture in it two ways: it is semantic: a vessel for thought, communication of abstract ideas, poetry, scientific concepts. As a semantic entity, words enable people to gather in the social plane, a shared and collaborative mental space. Speech is also sensory: rhythmic, tonal, and musical. Each person’s voice is uniquely theirs, immediately and reliably signifying the individual who produced the message.&amp;gt; &lt;/p&gt;
+&lt;/blockquote&gt;
 
+&lt;blockquote&gt;
+  &lt;p&gt;In an age that has adopted text as the de facto standard for communication, we often experience the message without the music, but voice sans message has its own allure. You may have encountered it, perhaps as a child in bed, hearing the murmurs of your parents in the next room. Or perhaps as a traveller in a foreign country, overhearing voices conversing in an unfamiliar language. When words are stripped of their literal meaning, their music elevates to the forefront of our attention.&amp;gt; &lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;In this installation, we turn a spotlight onto this music and to the shared social space that it inhabits. Four “performers” equipped with portable EEG and voice recorders will engage in friendly cocktail party conversation. EEG and vocal output will stream to our base station, which will analyze the presence and flow of attention in this ad hoc social network. Utterances will be sampled, their linguistic meaning removed, and their musical features enhanced. An algorithm will layer and persist the samples according to the significance of their source in the social plane. By pointing out the musicality of language, we hope to convey the seed of prodigy in us all.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Here is one conversation, which we recorded during a demonstration for the course &lt;em&gt;EE 16B. Designing Information Devices and Systems II&lt;/em&gt; at UC Berkeley.&lt;/p&gt;
+
+&lt;iframe width=&quot;60%&quot; height=&quot;150&quot; scrolling=&quot;no&quot; frameborder=&quot;no&quot; src=&quot;https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/229330702&amp;amp;auto_play=false&amp;amp;hide_related=false&amp;amp;show_comments=true&amp;amp;show_user=true&amp;amp;show_reposts=false&amp;amp;visual=true&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;This project is still under active development. We will present it in October at &lt;a href=&quot;http://www.spectrumnyc.com/&quot;&gt;Spectrum&lt;/a&gt;.&lt;/p&gt;
 </description>
-        <pubDate>Mon, 19 Oct 2015 11:20:27 -0700</pubDate>
-        <link>http://yourdomain.com/jekyll/update/2015/10/19/welcome-to-jekyll.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/jekyll/update/2015/10/19/welcome-to-jekyll.html</guid>
+        <pubDate>Mon, 19 Oct 2015 18:22:15 -0700</pubDate>
+        <link>http://yourdomain.com/projects/music/2015/10/19/cocktail-part-a.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/projects/music/2015/10/19/cocktail-part-a.html</guid>
         
         
-        <category>jekyll</category>
+        <category>projects</category>
         
-        <category>update</category>
+        <category>music</category>
         
       </item>
     
