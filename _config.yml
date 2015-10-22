@@ -1,11 +1,13 @@
 # Site settings
-title: robert
+title: my website
+user_name: Robert Gibboni III
+user_location: "Berkeley, CA"
 email: galileo@gmail.com
-description: "Personal website of Robert Gibboni"
+description: "it's nice to be nice"
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://yourdomain.com" # the base hostname & protocol for your site
 twitter_username: robertgibboni
 github_username:  r-b-g-b
-
+linkedin_url: https://www.linkedin.com/pub/robert-gibboni/36/a8/595
 # Build settings
 markdown: kramdown

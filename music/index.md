@@ -4,12 +4,10 @@ title: Music
 permalink: /music/
 ---
 
-In September 2015, [Richard Warp](http://www.richardwarp.com) and I collaborated to make a music installation for the Mozart and the Mind conference at UC San Diego. The result was [Cocktail Part A](/music/cocktail-part-a)
-
 Currently playing with:
 
 - [Art Nikels](https://artnikels.bandcamp.com/) (Roland SH-201)
-- [Growwler](https://growwler.bandcamp.com/) (Rhodes, Hammond B3, piano, synthesizer, tenor saxophone)
+- [Growwler](https://growwler.bandcamp.com/) (Rhodes, Hammond B3, piano, harmonica, tenor saxophone, synthesizer)
 - [George Dyer and the High Primes](http://www.youtube.com/watch?v=wqw-0yMU1kA) (Rhodes, Hammond B3, piano, tenor saxophone)
 - [Pablo Il Postino](https://soundcloud.com/pablo-il-postino) (piano, Wurly)
 
