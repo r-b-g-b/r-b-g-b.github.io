@@ -15,6 +15,8 @@ Here are the results: dark regions represent places with high diversity. In broa
 
 <br>
 
+<a href="/resources/bayarea-diversity-choropleth.html" target="_blank" style="float:right; font-size:80%">view full screen</a>
+
 <iframe src="/resources/bayarea-diversity-choropleth.html" width="100%" height="500px" style="border:none"></iframe>
 
 <br>

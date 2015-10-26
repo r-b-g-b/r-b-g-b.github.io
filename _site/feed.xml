@@ -5,8 +5,8 @@
     <description>it&#39;s nice to be nice</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 22 Oct 2015 16:12:15 -0700</pubDate>
-    <lastBuildDate>Thu, 22 Oct 2015 16:12:15 -0700</lastBuildDate>
+    <pubDate>Thu, 22 Oct 2015 16:57:40 -0700</pubDate>
+    <lastBuildDate>Thu, 22 Oct 2015 16:57:40 -0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -20,6 +20,8 @@
 &lt;p&gt;Here are the results: dark regions represent places with high diversity. In broad strokes, the East Bay is most diverse (yeeeeee), followed by SF and North Bay. If you want to delve a bit deeper into the demographics underlying the diversity index in a census tract, you can click on the little dot in the center of the tract to pop up the breakdown. For example, in 2010 my neighborhood had 3716 people, 1256 White, 1163 Black, 750 Hispanic, and 313 Asian and 234 other.&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/resources/bayarea-diversity-choropleth.html&quot; target=&quot;_blank&quot; style=&quot;float:right; font-size:80%&quot;&gt;view full screen&lt;/a&gt;&lt;/p&gt;
 
 &lt;iframe src=&quot;/resources/bayarea-diversity-choropleth.html&quot; width=&quot;100%&quot; height=&quot;500px&quot; style=&quot;border:none&quot;&gt;&lt;/iframe&gt;
 
