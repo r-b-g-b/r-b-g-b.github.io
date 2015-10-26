@@ -1,0 +1,17 @@
+---
+layout: page
+title: Projects
+permalink: /projects/
+---
+
+<ul>
+	{% for post in site.posts %}
+		{% if post.categories contains "projects" %}
+			<li><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+			{% for category in post.categories %}
+				<span class="category">#{{ category }}</span>
+			{% endfor %}
+			</li>
+		{% endif %}
+	{% endfor %}
+</ul>
