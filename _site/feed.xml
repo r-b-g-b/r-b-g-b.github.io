@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>my website</title>
+    <title>r-b g-b</title>
     <description>it&#39;s nice to be nice</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 26 Oct 2015 15:28:36 -0700</pubDate>
-    <lastBuildDate>Mon, 26 Oct 2015 15:28:36 -0700</lastBuildDate>
+    <pubDate>Mon, 26 Oct 2015 17:30:24 -0700</pubDate>
+    <lastBuildDate>Mon, 26 Oct 2015 17:30:24 -0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>How do monkeys look?</title>
+        <description>&lt;p&gt;Mmmm, kind of hairy, long tails, cute little bald faces? No, what I mean is how do they look &lt;em&gt;at things&lt;/em&gt;, specifically, how do they look at other monkeys. As an undergraduate at the University of Arizona, I had the extreme fortune of working under &lt;a href=&quot;http://neurology.arizona.edu/katalin-gothard-md-phd&quot;&gt;Dr. Katalin Gothard&lt;/a&gt;, who studies social and emotional processing in the amygdala using primate models. In order to understand social cognition in primates, the &lt;a href=&quot;http://gothard.wix.com/gothard_lab&quot;&gt;Gothard lab&lt;/a&gt; showed monkeys lots and lots of pictures of other monkeys.&lt;/p&gt;
+
+&lt;p&gt;Monkeys, like humans, communicate their emotions and intentions through eye contact and distinct, stereotyped facial expressions. And just like humans, all monkeys have their own more or less wonderful personalities, which are to some degree revealed in the path that their eyes trace as they scan a social scene. In humans, direct eye contact is often regarded as a sign of confidence. The same is true in monkeys. The difference is that, while displaying confidence as a human might help you make a great impression at your job interview, displaying confidence as a monkey will get you your monkey ass handed to you (unless you are the alpha monkey, and I’m sure you would be). Almost all neuropsychiatric disorders have some effect on scanpath patterns, for example individuals with autism will spend less time looking at facial features.&lt;/p&gt;
+
+&lt;p&gt;I developed ways to analyze these eye movements in order to understand how monkeys explored the faces of other monkeys. You can read about the study and see cool images of monkey faces in our article &lt;a href=&quot;http://journal.frontiersin.org/article/10.3389/neuro.08.050.2009/abstract&quot; target=&quot;_blank&quot;&gt;Individual differences in scanpaths correspond with serotonin transporter genotype and behavioral phenotype in rhesus monkeys (&lt;em&gt;Macaca mulatta&lt;/em&gt;)&lt;/a&gt; published in Frontiers in Behavioral Neuroscience.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 25 Oct 2015 21:36:28 -0700</pubDate>
+        <link>http://yourdomain.com/science/2015/10/25/how-do-monkeys-look.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/science/2015/10/25/how-do-monkeys-look.html</guid>
+        
+        
+        <category>science</category>
+        
+      </item>
     
       <item>
         <title>Racial Diversity Map</title>
