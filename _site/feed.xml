@@ -5,8 +5,8 @@
     <description>it&#39;s nice to be nice</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 27 Oct 2015 12:52:16 -0700</pubDate>
-    <lastBuildDate>Tue, 27 Oct 2015 12:52:16 -0700</lastBuildDate>
+    <pubDate>Tue, 27 Oct 2015 13:39:25 -0700</pubDate>
+    <lastBuildDate>Tue, 27 Oct 2015 13:39:25 -0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -38,17 +38,19 @@
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;/resources/bayarea-diversity-choropleth.html&quot; target=&quot;_blank&quot; style=&quot;float:right; font-size:80%&quot;&gt;view full screen&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/_resources/bayarea-diversity-choropleth.html&quot; target=&quot;_blank&quot; style=&quot;float:right; font-size:80%&quot;&gt;view full screen&lt;/a&gt;&lt;/p&gt;
 
-&lt;iframe src=&quot;/resources/bayarea-diversity-choropleth.html&quot; width=&quot;100%&quot; height=&quot;500px&quot; style=&quot;border:none&quot;&gt;&lt;/iframe&gt;
+&lt;iframe src=&quot;/_resources/bayarea-diversity-choropleth.html&quot; width=&quot;100%&quot; height=&quot;500px&quot; style=&quot;border:none&quot;&gt;&lt;/iframe&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Check out &lt;a href=&quot;/_resources/bay-area-diversity-notebook.html&quot; target=&quot;_blank&quot;&gt;this Jupyter notebook&lt;/a&gt; if you want more detail about how I went about finding, analyzing, and plotting the data.&lt;/p&gt;
 
 &lt;p&gt;I’d like to revisit this someday with a smarter measure of diversity. The index I came up with is blind to data outside of an individual census tract. Most people leave their census tracts every once in a while, so capturing larger-scale diversity would make this measure more realistic. For example, even the least diverse places in the Bay Area are probably just a 20 minute drive away from very diverse areas. A better metric would probably include something like, how large of a radius would you have to draw around your census tract to find as many people of non-predominant races as that tract has of its predominant race. For example, if my tract has 1000 Hispanic people, how big of an circle would I have to include around my tract to find 1000 non-Hispanic people? A measure like that, one that includes a concept of distance, would probably go much further towards capturing how diverse a place really feels.&lt;/p&gt;
 </description>
         <pubDate>Tue, 20 Oct 2015 23:00:02 -0700</pubDate>
-        <link>http://yourdomain.com/projects/data/geospatial/2015/10/20/racial-diversity-map.html</link>
-        <guid isPermaLink="true">http://yourdomain.com/projects/data/geospatial/2015/10/20/racial-diversity-map.html</guid>
+        <link>http://yourdomain.com/projects/data/geospatial/2015/10/20/bayarea-diversity.html</link>
+        <guid isPermaLink="true">http://yourdomain.com/projects/data/geospatial/2015/10/20/bayarea-diversity.html</guid>
         
         
         <category>projects</category>
