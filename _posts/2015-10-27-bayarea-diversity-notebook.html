@@ -1,0 +1,1040 @@
+---
+layout: post
+title: "Mapping diversity in the Bay Area Jupyter notebook"
+date: 2015-10-27 1:30:29
+categories: projects data geospatial notebook
+---
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The first step is getting the raw data that will allow us to do the actual analysis. This will include:</p>
+<ul>
+<li><strong>Geographic data</strong> of the areas in which we want to analyze diversity.</li>
+<li><strong>Demographic data</strong> for the same geographical areas</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Getting-geographic-data">Getting geographic data<a class="anchor-link" href="#Getting-geographic-data">&#182;</a></h1><p>Luckily the US Census Bureau has us covered, providing "shapefiles" for all sorts of things through something called <a href="https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2010&layergroup=Census+Tracts">TIGER</a> (rawwwwwr):</p>
+<p>From the drop-down menu for Census Tract (2010) select California, then click the "Download state file" button. Wonderfully, the download doesn't begin. Checking the javascript console reveals that:</p>
+<blockquote><p><code>index.php?year=2010&amp;layergroup=Census+Tracts:1 Mixed Content: The page at 'https://www.census.gov/cgi-bin/geo/shapefiles/index.php?year=2010&amp;layergroup=Census+Tracts' was loaded over HTTPS, but requested an insecure resource 'http://www2.census.gov/geo/tiger/TIGER2010/TRACT/2010/tl_2010_06001_tract10.zip'. This request has been blocked; the content must be served over HTTPS.</code></p>
+</blockquote>
+<p>So just reload the page changing <code>https:</code> to <code>http:</code> and get yourself some geodata!</p>
+<p>The file is named <code>tl_2010_06_tract10.zip</code>, <code>2010</code> referring to the census year, <code>06</code> is the state code for California. Shapefiles are proprietary (boo) and old, so we convert them to the cooler geoJSON format using a command-line tool called <code>ogr2ogr</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="o">!</span>ogr2ogr -f GeoJSON -t_srs crs:84 ca-tract.geojson ../geodata/ca-tract-shapefiles/tl_2010_06_tract10.shp
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now the file is good plain <code>json</code> with special fields that make it "GEO." So we load it with the <code>json</code> python module</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="kn">import</span> <span class="nn">json</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;ca-tract.geojson&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">geodata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This file contains the entire state of California, but for now I just want to look at the "Bay Area" counties. The census uses something called FIPS codes to refer to those, which I got from wikipedia:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Alameda_county">Alameda County (1)</a></li>
+<li>SF County (75)</li>
+<li>Marin County (41)</li>
+<li>Contra Costa County (13)</li>
+</ul>
+<p>I'll use these codes to filter out the geodata for just those counties and save it to another, smaller geoJSON file.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">county_codes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">75</span><span class="p">]</span>
+<span class="n">county_codes_str</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;</span><span class="si">%3.3i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">county_codes</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">geodata_bayarea</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="n">geodata</span><span class="p">[</span><span class="s">&#39;crs&#39;</span><span class="p">],</span> <span class="nb">type</span><span class="o">=</span><span class="n">geodata</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">])</span>
+<span class="n">geodata_bayarea</span><span class="p">[</span><span class="s">&#39;features&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">geodata</span><span class="p">[</span><span class="s">&#39;features&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="s">&#39;properties&#39;</span><span class="p">][</span><span class="s">&#39;COUNTYFP10&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">county_codes_str</span><span class="p">]</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;bayarea-tract.geojson&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">geodata_bayarea</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;bayarea-tract.geojson&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">geodata_bayarea</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Getting-demographic-data">Getting demographic data<a class="anchor-link" href="#Getting-demographic-data">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The US Census Bureau operates an API for finding census data at <a href="http://factfinder.census.gov/">http://factfinder.census.gov/</a>
+I found the census data through the "<a href="http://factfinder.census.gov/faces/nav/jsf/pages/download_center.xhtml">Download Center</a>"</p>
+<p>There are a couple of steps:</p>
+<ul>
+<li>Select the radio button <strong>I know the dataset or table(s) that I want to download</strong>, then <strong>Next</strong></li>
+<li>Select <strong>Decennial Census</strong> from the dropdown menu</li>
+<li>Select <strong>2010 SF 100% Data</strong>, then <strong>Add to your selections</strong>, then <strong>Next</strong></li>
+<li>Select <strong>State ... Place ... County (or part) ... Census Tract (or part)</strong></li>
+</ul>
+<p>The table named <strong>Race and Hispanic or Latino Origin: 2010</strong> contains counts for all races. Select that, download it and you're off!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">demdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">&#39;../censusdata/DEC_10_SF1_QTP3_with_ann.csv&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">column_description</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">demdata</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">column_mapper</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;GEO.id&#39;</span><span class="p">:</span> <span class="s">&#39;geoid&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S01&#39;</span><span class="p">:</span> <span class="s">&#39;total&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S02&#39;</span><span class="p">:</span> <span class="s">&#39;one_race&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S03&#39;</span><span class="p">:</span> <span class="s">&#39;numWhite&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S04&#39;</span><span class="p">:</span> <span class="s">&#39;numBlack&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S05&#39;</span><span class="p">:</span> <span class="s">&#39;numAI&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S10&#39;</span><span class="p">:</span> <span class="s">&#39;numAsian&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S23&#39;</span><span class="p">:</span> <span class="s">&#39;num1Other&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S24&#39;</span><span class="p">:</span> <span class="s">&#39;num2Other&#39;</span><span class="p">,</span>
+     <span class="s">&#39;HD01_S30&#39;</span><span class="p">:</span> <span class="s">&#39;numHisp&#39;</span><span class="p">}</span>
+<span class="n">demdata</span> <span class="o">=</span> <span class="n">demdata</span><span class="p">[</span><span class="n">column_mapper</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+<span class="n">demdata</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">column_mapper</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We need to do a little parsing of the geo id to get the county code and tract numbers. The <code>extract</code> method appears to do what we want, extracting substrings based on regular expression matches.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">demdata</span><span class="p">[</span><span class="s">&#39;county&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">geoid</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s">&#39;US06(\d\d\d)&#39;</span><span class="p">)</span>
+<span class="n">demdata</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">demdata</span><span class="o">.</span><span class="n">county</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">county_codes_str</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">demdata</span><span class="p">[</span><span class="s">&#39;tract&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">geoid</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s">&#39;US\d\d\d\d\d(\d\d\d\d)&#39;</span><span class="p">)</span>
+<span class="n">demdata</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;geoid&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">demdata</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>numAsian</th>
+      <th>numHisp</th>
+      <th>num2Other</th>
+      <th>numWhite</th>
+      <th>one_race</th>
+      <th>total</th>
+      <th>num1Other</th>
+      <th>numAI</th>
+      <th>numBlack</th>
+      <th>county</th>
+      <th>tract</th>
+    </tr>
+    <tr>
+      <th>geoid</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1400000US06001400100</th>
+      <td>456</td>
+      <td>117</td>
+      <td>116</td>
+      <td>2161</td>
+      <td>2821</td>
+      <td>2937</td>
+      <td>49</td>
+      <td>4</td>
+      <td>142</td>
+      <td>001</td>
+      <td>4001</td>
+    </tr>
+    <tr>
+      <th>1400000US06001400200</th>
+      <td>147</td>
+      <td>151</td>
+      <td>115</td>
+      <td>1659</td>
+      <td>1859</td>
+      <td>1974</td>
+      <td>16</td>
+      <td>4</td>
+      <td>33</td>
+      <td>001</td>
+      <td>4002</td>
+    </tr>
+    <tr>
+      <th>1400000US06001400300</th>
+      <td>423</td>
+      <td>399</td>
+      <td>319</td>
+      <td>3468</td>
+      <td>4546</td>
+      <td>4865</td>
+      <td>115</td>
+      <td>17</td>
+      <td>518</td>
+      <td>001</td>
+      <td>4003</td>
+    </tr>
+    <tr>
+      <th>1400000US06001400400</th>
+      <td>278</td>
+      <td>332</td>
+      <td>230</td>
+      <td>2628</td>
+      <td>3473</td>
+      <td>3703</td>
+      <td>91</td>
+      <td>14</td>
+      <td>456</td>
+      <td>001</td>
+      <td>4004</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">demdata</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A few of the entries contain a suffix (r39...). I don't know exactly what that means, but my hunch is that it's tagging data that was revised for some reason or another. In any case, it messes with the conversion from string to integer, so it's gotta go.</p>
+<p>Again <code>Series.extract</code> is our string parsing friend.</p>
+<p>Here, I convert everything to <code>int</code>, printing the changes to make sure nothing wonky happens.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">demdata</span><span class="p">:</span>
+    <span class="n">demdata_col</span> <span class="o">=</span> <span class="n">demdata</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+    <span class="n">demdata_col_extract</span> <span class="o">=</span> <span class="n">demdata_col</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s">&#39;(\d+)&#39;</span><span class="p">)</span>
+    <span class="n">demdata</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">demdata_col_extract</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">demdata_counts</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">regex</span><span class="o">=</span><span class="s">&#39;^num&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">();</span>
+<span class="n">demdata_counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&#39;Overall distribution of races in California&#39;</span><span class="p">);</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+HhGzgWdJY/UhTYN9NenmllmNW/LzenfkMk7M656ZyziGVKtolGFmZsNgrbyPYv78xUO6U3X+VlLn
+2MHxV83xV2uIaxR9Nj35zmwzMytyojAzsyInCjMzK3KiMDOzIicKMzMrcqIwM7MiJwozMytyojAz
+syInCjMzK3KiMDOzIicKMzMr6nea8bXd8uXLmTfvsbbes3DhGBYsWNLy+pMmbcmoUaPaDc3MrCOs
+84li3rzH+MDZ32P0+IlDUv7SRU9w3kcPZuuttxmS8s3Mhto6nygARo+fyJhNtqg6DDOzjuQ+CjMz
+K3KiMDOzIicKMzMrcqIwM7MiJwozMytyojAzsyInCjMzK3KiMDOzIicKMzMrcqIwM7MiJwozMyty
+ojAzsyInCjMzK3KiMDOzIicKMzMrcqIwM7MiJwozMytyojAzsyInCjMzK3KiMDOzIicKMzMrcqIw
+M7MiJwozMytyojAzsyInCjMzK3KiMDOzIicKMzMrcqIwM7MiJwozMytyojAzsyInCjMzK3KiMDOz
+IicKMzMrcqIwM7Oika2sFBGTgc9J2icidgK+DzyYX75I0nURcQxwLLACOFPSjRGxETADmAAsBo6U
+9GRE7Aqcm9e9WdIZeTunAgfm5R+UNDciNgOuATYEHgeOlrRsjey9mZn1q98aRUR8DLgM2CAvei3w
+JUn75H/XRcTmwEnA7sD+wLSIGAWcAPxS0hTgKuBTuYxLgMMk7QlMjogdI2JnYIqkycChwIV53c8A
+M3IZ9wLHDX63zcysVa00PT0EvB3oys9fCxwUEbdFxNciYgzwemCOpOckPZPfswOwBzAzv28mMDUi
+xgKjJD2Sl88CpuZ1bwaQNA8YmWsTzWXclNc1M7Nh0m+ikHQ9qSmo4S7gI5L2An4PnAqMBRY1rbMY
+GA+MA54pLOu5vK8yGsuX5GVmZjZMWuqj6OEGSY0L9w3ABcDtpGTRMBZ4mpQQxhaWQUoETwPLC2WM
+A+Y3LSvaZJPRjBw5oqWdWbhwTEvrDcamm45hwoSx/a84TDoploFw/NVy/NWqIv6BJIqZEXGypLmk
+ZqCfAXcDZ0XEBqRO5+2A+4E5pM7pucABwO2SFkfE8ojYCngE2A84DXge+EJEnANMArokPRURjTKm
+N8roL8CFC5e2vDMLFixped2BWrBgCfPnLx7y7bRiwoSxHRPLQDj+ajn+ag1l/KUE1E6i6M7/Hw9c
+GBHPAX8GjpW0JCLOB2aTmrNOkfRsRFwMTI+I2cCzwOFNZVwNjABm5aRDXu+OXMaJed0zcxnHkGoV
+jTLMzGwYdHV3d/e/Vs3Mn7+45Z16+OEH+cSldzJmky2GJJYlC//EtGN3ZeuttxmS8tvlb1TVcvzV
+cvzFsrv6es033JmZWZEThZmZFTlRmJlZkROFmZkVOVGYmVmRE4WZmRU5UZiZWZEThZmZFTlRmJlZ
+kROFmZkVOVGYmVmRE4WZmRU5UZiZWZEThZmZFTlRmJlZkROFmZkVOVGYmVmRE4WZmRU5UZiZWZET
+hZmZFTlRmJlZkROFmZkVOVGYmVmRE4WZmRU5UZiZWZEThZmZFTlRmJlZkROFmZkVOVGYmVmRE4WZ
+mRU5UZiZWZEThZmZFTlRmJlZkROFmZkVOVGYmVmRE4WZmRU5UZiZWZEThZmZFTlRmJlZkROFmZkV
+OVGYmVmRE4WZmRU5UZiZWZEThZmZFTlRmJlZkROFmZkVOVGYmVnRyFZWiojJwOck7RMR/wxcCawE
+7gdOlNQdEccAxwIrgDMl3RgRGwEzgAnAYuBISU9GxK7AuXndmyWdkbdzKnBgXv5BSXMjYjPgGmBD
+4HHgaEnL1tD+m5lZP/qtUUTEx4DLgA3yoi8Bp0iaAnQBh0TE5sBJwO7A/sC0iBgFnAD8Mq97FfCp
+XMYlwGGS9gQmR8SOEbEzMEXSZOBQ4MK87meAGbmMe4HjBrvTZmbWulaanh4C3k5KCgA7S7o9P74J
+mArsAsyR9JykZ/J7dgD2AGbmdWcCUyNiLDBK0iN5+axcxh7AzQCS5gEjc22iuYzG9szMbJj0mygk
+XU9qCmroanq8GBgPjAMW9bH8mcKyVstoLF+Sl5mZ2TBpqY+ih5VNj8cBT5Mu/GOblo/tZXlvy5rL
+WF4oYxwwv2lZ0SabjGbkyBEt7czChWNaWm8wNt10DBMmjO1/xWHSSbEMhOOvluOvVhXxDyRR3BsR
+e0m6DTgAuAW4GzgrIjYgdTpvR+ronkPqnJ6b171d0uKIWB4RWwGPAPsBpwHPA1+IiHOASUCXpKci
+olHG9EYZ/QW4cOHSlndmwYIlLa87UAsWLGH+/MVDvp1WTJgwtmNiGQjHXy3HX62hjL+UgNpJFN35
+/w8Dl+XO6geAb+VRT+cDs0nNWadIejYiLgamR8Rs4Fng8FzG8cDVwAhglqS5AHm9O3IZJ+Z1z8xl
+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
+YII=
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Compute-diversity-index">Compute diversity index<a class="anchor-link" href="#Compute-diversity-index">&#182;</a></h1><p>Now we need some way to turn all these census counts into some value that expresses diversity. I read about a method used by <a href="http://diversity.missouristate.edu/DiversityIndex.htm">Missouri state</a> that seemed to make intuitive sense. It's the probability that two randomly chosen people in the census tract will be of different races and comes directly from some very basic laws of probability. Start with a formula for "Homogeneity," the probability of drawing two people of the same race. Since draws are independent, that probability is
+$$P(\text{race1})*P(\text{race1})=P(\text{race1})^2$$</p>
+<p>Then the probability of drawing two people of the same race is the sum of the squared probabilities for each of the races.</p>
+$$\text{Homogeneity}=P(\text{Asian})^2+P(\text{Black})^2+P(\text{Hispanic})^2+P(\text{White})^2+P(\text{Other})^2$$$$\text{Diversity}=1-\text{Homogeneity}$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">calculate_diversity</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">col_names</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">col_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;num&#39;</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">/</span><span class="n">total</span>
+    
+    <span class="n">diversity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">p</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span>
+    <span class="k">return</span> <span class="n">diversity</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">demdata</span><span class="p">[</span><span class="s">&#39;diversity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_diversity</span><span class="p">(</span><span class="n">demdata_counts</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Combining-geographic-and-demographic-data">Combining geographic and demographic data<a class="anchor-link" href="#Combining-geographic-and-demographic-data">&#182;</a></h1><p>Now we make ourselves a <em>choropleth</em>, which is the fancy cartographer's word for colory map. We'll use the fantastic python module <a href="https://github.com/python-visualization/folium">folium</a>, which makes beautiful d3 maps without me having to type a line of javascript.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="kn">import</span> <span class="nn">folium</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>While the choropleth is a great way to show a lot of spatial data, I'd also like to have additional data available if the user wants it. "Additional data" in this case will be the specific population counts per each racial category for each tract. I couldn't find a way to make the census tract polygon's clickable, so I'll settle for putting a little dot in the middle. If the user wants to see the breakdown underlying the diversity score for a tract, they click on the marker and a tool-tip style window pops up.</p>
+<p>Here's the code to calculate the polygon centroid given a tract polygon.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="k">def</span> <span class="nf">area_for_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">imax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">imax</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">result</span> <span class="o">/</span> <span class="mf">2.</span>
+
+<span class="k">def</span> <span class="nf">centroid_for_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">):</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">area_for_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+    <span class="n">imax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="n">result_x</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">result_y</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">imax</span><span class="p">):</span>
+        <span class="n">result_x</span> <span class="o">+=</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">result_y</span> <span class="o">+=</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">result_x</span> <span class="o">+=</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">result_y</span> <span class="o">+=</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="p">((</span><span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">polygon</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">polygon</span><span class="p">[</span><span class="n">imax</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">result_x</span> <span class="o">/=</span> <span class="p">(</span><span class="n">area</span> <span class="o">*</span> <span class="mf">6.0</span><span class="p">)</span>
+    <span class="n">result_y</span> <span class="o">/=</span> <span class="p">(</span><span class="n">area</span> <span class="o">*</span> <span class="mf">6.0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result_x</span><span class="p">,</span> <span class="n">result_y</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">centroids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">geoids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">geodata_bayarea</span><span class="p">[</span><span class="s">&#39;features&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="s">&#39;geometry&#39;</span><span class="p">][</span><span class="s">&#39;type&#39;</span><span class="p">]</span><span class="o">==</span><span class="s">&#39;Polygon&#39;</span><span class="p">:</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">centroid_for_polygon</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">&#39;geometry&#39;</span><span class="p">][</span><span class="s">&#39;coordinates&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">centroids</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">])</span>
+        <span class="n">geoids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="s">&#39;properties&#39;</span><span class="p">][</span><span class="s">&#39;GEOID10&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">lat_centroids</span><span class="p">,</span> <span class="n">lon_centroids</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">centroids</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">centroid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;geoid10&#39;</span><span class="p">:</span><span class="n">geoids</span><span class="p">,</span> <span class="s">&#39;lat_centroid&#39;</span><span class="p">:</span><span class="n">lat_centroids</span><span class="p">,</span> <span class="s">&#39;lon_centroid&#39;</span><span class="p">:</span><span class="n">lon_centroids</span><span class="p">})</span>
+<span class="n">centroid_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;geoid10&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">demdata</span><span class="p">[</span><span class="s">&#39;geoid10&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s">&#39;US(\d\d\d\d\d\d\d\d\d\d\d)&#39;</span><span class="p">)</span>
+<span class="n">demdata</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;geoid10&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">demdata</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">centroid_df</span><span class="p">)</span>
+<span class="n">demdata</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="k">def</span> <span class="nf">inline_map</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">650</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes a folium instance and embed HTML.&quot;&quot;&quot;</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">_build_map</span><span class="p">()</span>
+    <span class="n">srcdoc</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">HTML</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;quot;&#39;</span><span class="p">)</span>
+    <span class="n">embed</span> <span class="o">=</span> <span class="n">HTML</span><span class="p">(</span><span class="s">&#39;&lt;iframe srcdoc=&quot;{}&quot; &#39;</span>
+                 <span class="s">&#39;style=&quot;width: {}px; height: {}px; &#39;</span>
+                 <span class="s">&#39;border: none&quot;&gt;&lt;/iframe&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcdoc</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">embed</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span class="n">label_map</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;numAsian&#39;</span><span class="p">:</span> <span class="s">&#39;Asian&#39;</span><span class="p">,</span> <span class="s">&#39;numBlack&#39;</span><span class="p">:</span> <span class="s">&#39;Black&#39;</span><span class="p">,</span> <span class="s">&#39;numHisp&#39;</span><span class="p">:</span> <span class="s">&#39;Hispanic&#39;</span><span class="p">,</span> <span class="s">&#39;numWhite&#39;</span><span class="p">:</span> <span class="s">&#39;White&#39;</span><span class="p">}</span>
+<span class="n">threshold_scale</span> <span class="o">=</span> <span class="n">demdata</span><span class="o">.</span><span class="n">diversity</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">folium</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="p">[</span><span class="mf">37.864364</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.211114</span><span class="p">],</span> <span class="n">zoom_start</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+               <span class="n">tiles</span><span class="o">=</span><span class="s">&#39;Stamen Toner&#39;</span><span class="p">,</span>
+               <span class="n">attr</span><span class="o">=</span><span class="s">&#39;Map tiles by Stamen Design (stamen.com)&#39;</span><span class="p">)</span>
+
+<span class="n">m</span><span class="o">.</span><span class="n">geo_json</span><span class="p">(</span><span class="n">geo_path</span><span class="o">=</span><span class="s">r&#39;bayarea-tract.geojson&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">demdata</span><span class="p">[[</span><span class="s">&#39;geoid10&#39;</span><span class="p">,</span> <span class="s">&#39;diversity&#39;</span><span class="p">]],</span> 
+           <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;geoid10&#39;</span><span class="p">,</span> <span class="s">&#39;diversity&#39;</span><span class="p">],</span>
+           <span class="n">key_on</span><span class="o">=</span><span class="s">&#39;feature.properties.GEOID10&#39;</span><span class="p">,</span>
+           <span class="n">fill_color</span><span class="o">=</span><span class="s">&#39;YlGnBu&#39;</span><span class="p">,</span>
+           <span class="n">fill_opacity</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+           <span class="n">threshold_scale</span><span class="o">=</span><span class="n">threshold_scale</span><span class="p">)</span>
+
+<span class="n">m</span><span class="o">.</span><span class="n">create_map</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s">&#39;bayarea-diversity-choropleth.html&#39;</span><span class="p">)</span>
+<span class="n">inline_map</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<iframe srcdoc="<!DOCTYPE html>
+<head>
+   <meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; />
+   <link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css&quot; />
+   <script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js&quot;></script>
+   <script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js&quot; charset=&quot;utf-8&quot;></script>
+   <script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js&quot;></script>
+
+   
+   
+   
+   
+
+   <style>
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .legend {
+          padding: 0px 0px;
+          font: 10px sans-serif;
+          background: white;
+          background: rgba(255,255,255,0.8);
+          box-shadow: 0 0 15px rgba(0,0,0,0.2);
+          border-radius: 5px;
+      }
+
+      .key path {
+        display: none;
+      }
+
+   </style>
+</head>
+
+<body>
+
+   <div id=&quot;map&quot; style=&quot;width: 100%; height: 100%&quot;></div>
+
+   <script>
+
+      queue()
+          .defer(d3.json, 'data.json')
+          .defer(d3.json, 'bayarea-tract.geojson')
+          .await(makeMap)
+
+      function onEachFeature(feature, layer) {
+          // does this feature have a property named popupContent?
+          if (feature.properties && feature.properties.popupContent) {
+              layer.bindPopup(feature.properties.popupContent);
+              }
+          };
+
+      function makeMap(error, data_1,gjson_1) {
+
+          
+
+          
+
+          function matchKey(datapoint, key_variable){
+              if (typeof key_variable[0][datapoint] === 'undefined') {
+                  return null;
+              }
+              else {
+                  return parseFloat(key_variable[0][datapoint]);
+              };
+          };
+
+          
+          var color = d3.scale.threshold()
+              .domain([16.386576486570004, 49.68348824161616, 61.83300758407192, 70.38044239863444, 75.41363416167346])
+              .range(['#FFFFCC', '#C7E9B4', '#7FCDBB', '#41B6C4', '#1D91C0', '#225EA8']);
+          
+
+          var map = L.map('map').setView([37.864364, -122.211114], 9);
+
+          L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+              maxZoom: 18,
+              minZoom: 1,
+              attribution: 'Map tiles by <a href=&quot;http://stamen.com&quot;>Stamen Design</a>, under <a href=&quot;http://creativecommons.org/licenses/by/3.0&quot;>CC BY 3.0</a>. Data by <a href=&quot;http://openstreetmap.org&quot;>OpenStreetMap</a>, under <a href=&quot;http://www.openstreetmap.org/copyright&quot;>ODbL</a>.'
+          }).addTo(map);
+
+          
+          function style_1(feature) {
+    return {
+        fillColor: color(matchKey(feature.properties.GEOID10, data_1)),
+        weight: 1,
+        opacity: 1,
+        color: 'black',
+        fillOpacity: 0.9
+    };
+}
+          
+
+          
+          gJson_layer_1 = L.geoJson(gjson_1, {style: style_1,onEachFeature: onEachFeature}).addTo(map)
+          
+
+          
+              var legend = L.control({position: 'topright'});
+
+    legend.onAdd = function (map) {var div = L.DomUtil.create('div', 'legend'); return div};
+
+    legend.addTo(map);
+
+    var x = d3.scale.linear()
+    .domain([0, 82])
+    .range([0, 400]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient(&quot;top&quot;)
+        .tickSize(1)
+        .tickValues([16.386576486570004, 49.68348824161616, 61.83300758407192, 70.38044239863444, 75.41363416167346]);
+
+    var svg = d3.select(&quot;.legend.leaflet-control&quot;).append(&quot;svg&quot;)
+        .attr(&quot;id&quot;, 'legend')
+        .attr(&quot;width&quot;, 450)
+        .attr(&quot;height&quot;, 40);
+
+    var g = svg.append(&quot;g&quot;)
+        .attr(&quot;class&quot;, &quot;key&quot;)
+        .attr(&quot;transform&quot;, &quot;translate(25,16)&quot;);
+
+    g.selectAll(&quot;rect&quot;)
+        .data(color.range().map(function(d, i) {
+          return {
+            x0: i ? x(color.domain()[i - 1]) : x.range()[0],
+            x1: i < color.domain().length ? x(color.domain()[i]) : x.range()[1],
+            z: d
+          };
+        }))
+      .enter().append(&quot;rect&quot;)
+        .attr(&quot;height&quot;, 10)
+        .attr(&quot;x&quot;, function(d) { return d.x0; })
+        .attr(&quot;width&quot;, function(d) { return d.x1 - d.x0; })
+        .style(&quot;fill&quot;, function(d) { return d.z; });
+
+    g.call(xAxis).append(&quot;text&quot;)
+        .attr(&quot;class&quot;, &quot;caption&quot;)
+        .attr(&quot;y&quot;, 21)
+        .text('diversity');
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+
+      };
+
+   </script>
+</body>" style="width: 650px; height: 500px; border: none"></iframe>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre> 
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>

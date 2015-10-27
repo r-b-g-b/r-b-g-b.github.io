@@ -2,7 +2,7 @@
 layout: post
 title: How do monkeys look?
 date: 2015-10-26 4:36:28
-categories: science
+categories: post science
 ---
 
 Mmmm, kind of hairy, long tails, cute little bald faces? No, what I mean is how do they look *at things*, specifically, how do they look at other monkeys. As an undergraduate at the University of Arizona, I had the extreme fortune of working under [Dr. Katalin Gothard](http://neurology.arizona.edu/katalin-gothard-md-phd), who studies social and emotional processing in the amygdala using primate models. In order to understand social cognition in primates, the [Gothard lab](http://gothard.wix.com/gothard_lab) showed monkeys lots and lots of pictures of other monkeys.
