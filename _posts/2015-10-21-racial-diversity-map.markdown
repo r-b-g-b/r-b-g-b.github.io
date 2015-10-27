@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Racial Diversity Map"
+title: "Mapping diversity in the Bay Area"
 date: 2015-10-21 6:00:02
 categories: projects data geospatial
 ---

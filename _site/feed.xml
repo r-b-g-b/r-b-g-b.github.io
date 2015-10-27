@@ -5,8 +5,8 @@
     <description>it&#39;s nice to be nice</description>
     <link>http://yourdomain.com/</link>
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 26 Oct 2015 17:30:24 -0700</pubDate>
-    <lastBuildDate>Mon, 26 Oct 2015 17:30:24 -0700</lastBuildDate>
+    <pubDate>Mon, 26 Oct 2015 17:35:16 -0700</pubDate>
+    <lastBuildDate>Mon, 26 Oct 2015 17:35:16 -0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -27,7 +27,7 @@
       </item>
     
       <item>
-        <title>Racial Diversity Map</title>
+        <title>Mapping diversity in the Bay Area</title>
         <description>&lt;p&gt;In September 2014, a fascinating piece of data science from the &lt;a href=&quot;http://www.coopercenter.org/&quot;&gt;Weldon Cooper Center for Public Service&lt;/a&gt; made the rounds on the internet. The &lt;a href=&quot;http://demographics.coopercenter.org/DotMap/&quot;&gt;Racial Dot Map&lt;/a&gt; project accomplished the impressive feat of generating a map of the United States made of of dots. Not just any dots though. Each dot represents (roughly) the residence of a single US citizen, color coded by that person’s race. In addition to being lovely to look at, the map reveals some interesting patterns of how people of different races live together (or in some cases, live very far apart from each other).&lt;/p&gt;
 
 &lt;p&gt;One thing I really love about the Bay Area is how diverse it is, and I became curious about what these data would show about my community.&lt;/p&gt;
