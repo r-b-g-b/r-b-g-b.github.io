@@ -5,7 +5,7 @@ date: 2015-10-21 6:00:02
 categories: projects data geospatial
 ---
 
-In September 2014, a fascinating piece of data science from the [Weldon Cooper Center for Public Service](http://www.coopercenter.org/) made the rounds on the internet. The [Racial Dot Map](http://demographics.coopercenter.org/DotMap/) project accomplished the impressive feat of generating a map of the United States made of of dots. Not just any dots though. Each dot represents (roughly) the residence of a single US citizen, color coded by that person's race. In addition to being lovely to look at, the map reveals some interesting patterns of how people of different races live together (or in some cases, live very far apart from each other).
+In September 2014, some fascinating work from the [Weldon Cooper Center for Public Service](http://www.coopercenter.org/) made the rounds on the internet. The [Racial Dot Map](http://demographics.coopercenter.org/DotMap/) project accomplished the impressive feat of generating a map of the United States made of of dots. Not just any dots though. Each dot represents (roughly) the residence of a single US citizen, color coded by that person's race. In addition to being lovely to look at, the map reveals some interesting patterns of how people of different races live together (or in some cases, live very far apart from each other).
 
 One thing I really love about the Bay Area is how diverse it is, and I became curious about what these data would show about my community.
 
@@ -20,5 +20,7 @@ Here are the results: dark regions represent places with high diversity. In broa
 <iframe src="/resources/bayarea-diversity-choropleth.html" width="100%" height="500px" style="border:none"></iframe>
 
 <br>
+
+If you're interested, you can check out [my Jupyter notebook](http://nbviewer.ipython.org/github/r-b-g-b/r-b-g-b.github.io/blob/master/_notebooks/blog-post.ipynb) describing exactly how I generated this map.
 
 I'd like to revisit this someday with a smarter measure of diversity. The index I came up with is blind to data outside of an individual census tract. Most people leave their census tracts every once in a while, so capturing larger-scale diversity would make this measure more realistic. For example, even the least diverse places in the Bay Area are probably just a 20 minute drive away from very diverse areas. A better metric would probably include something like, how large of a radius would you have to draw around your census tract to find as many people of non-predominant races as that tract has of its predominant race. For example, if my tract has 1000 Hispanic people, how big of an circle would I have to include around my tract to find 1000 non-Hispanic people? A measure like that, one that includes a concept of distance, would probably go much further towards capturing how diverse a place really feels.
