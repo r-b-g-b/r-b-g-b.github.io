@@ -21,6 +21,6 @@ Here are the results: dark regions represent places with high diversity. In broa
 
 <br>
 
-Check out <a href="/projects/data/geospatial/notebook/2015/10/26/bayarea-diversity-notebook.html" target="_blank">this Jupyter notebook</a> if you want more detail about how I went about finding, analyzing, and plotting the data.
+Check out <a href="/resources/bayarea-diversity-notebook.html" target="_blank">this Jupyter notebook</a> if you want more detail about how I went about finding, analyzing, and plotting the data.
 
 I'd like to revisit this someday with a smarter measure of diversity. The index I came up with is blind to data outside of an individual census tract. Most people leave their census tracts every once in a while, so capturing larger-scale diversity would make this measure more realistic. For example, even the least diverse places in the Bay Area are probably just a 20 minute drive away from very diverse areas. A better metric would probably include something like, how large of a radius would you have to draw around your census tract to find as many people of non-predominant races as that tract has of its predominant race. For example, if my tract has 1000 Hispanic people, how big of an circle would I have to include around my tract to find 1000 non-Hispanic people? A measure like that, one that includes a concept of distance, would probably go much further towards capturing how diverse a place really feels.
