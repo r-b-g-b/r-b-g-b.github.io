@@ -5,6 +5,8 @@ date:   2015-10-20 1:22:15
 categories: post projects music
 ---
 
+![Me at MATM2015](/resources/matm2015.png)
+
 In July 2015, friend and composer Richard Warp and I set out to make an installation for the [Mozart and the Mind](http://www.mainlymozart.org/mozart-and-the-mind/mozart-the-mind-the-prodigal-years/) conference. Our goal was to develop software that would algorithmically transform a conversation into a unique musical composition in real-time. For computer music, I had always turned to Max/MSP, but felt that it's building-block style made it difficult to work in more conventional program flow, data analysis, and machine learning. That's when I discovered the fantastic python module [pyo](http://ajaxsoundstudio.com/software/pyo/), a library for real-time audio synthesis. I am planning on writing a blog post detailing my exploits, but for now, you can at least check out the results.
 
 Artist statement:
